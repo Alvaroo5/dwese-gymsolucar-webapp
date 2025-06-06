@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -95,6 +96,13 @@ public class AuthenticationController {
                         .body(new AuthResponseDTO(null, "El email ya está registrado."));
             }
 
+            // Validación de fechaNacimiento (no futura)
+            LocalDate currentDate = LocalDate.now();
+            if (registerRequest.getFechaNacimiento() != null && registerRequest.getFechaNacimiento().isAfter(currentDate)) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new AuthResponseDTO(null, "La fecha de nacimiento no puede ser posterior al día actual."));
+            }
+
             Usuario usuario = new Usuario();
             usuario.setEmail(registerRequest.getEmail());
             usuario.setUsername(registerRequest.getUsername());
@@ -139,7 +147,10 @@ public class AuthenticationController {
                 .filter(fieldError -> "password".equals(fieldError.getField()))
                 .findFirst()
                 .map(fieldError -> "La contraseña debe tener al menos 8 caracteres.")
-                .orElse("Error en los datos de registro.");
+                .orElseGet(() -> ex.getBindingResult().getFieldErrors().stream()
+                        .findFirst()
+                        .map(fieldError -> fieldError.getDefaultMessage())
+                        .orElse("Error en los datos de registro."));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new AuthResponseDTO(null, errorMessage));
     }
