@@ -11,7 +11,6 @@ public class ProgressHistoryDTO {
         this.puntosObtenidos = puntosObtenidos;
     }
 
-    // Getters y setters
     public String getFecha() {
         return fecha;
     }

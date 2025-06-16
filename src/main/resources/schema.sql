@@ -1,13 +1,13 @@
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    email VARCHAR(50) UNIQUE NOT NULL,
-    username VARCHAR(30) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    nombre VARCHAR(50) NOT NULL,
-    apellidos VARCHAR(50) NOT NULL,
-    fecha_nacimiento DATE,
-    telefono VARCHAR(20),
-    estado_cuenta BOOLEAN DEFAULT TRUE
+        email VARCHAR(50) UNIQUE NOT NULL,
+        username VARCHAR(30) UNIQUE NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        nombre VARCHAR(50) NOT NULL,
+        apellidos VARCHAR(50) NOT NULL,
+        fecha_nacimiento DATE,
+        telefono VARCHAR(20),
+        estado_cuenta BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS roles (
@@ -30,8 +30,7 @@ CREATE TABLE IF NOT EXISTS clases (
     dia_semana VARCHAR(15),
     hora_inicio VARCHAR(20),
     hora_fin VARCHAR(20),
-    aforo_maximo INT,
-    CONSTRAINT unique_clase_horario UNIQUE (nombre_clase, dia_semana, hora_inicio, hora_fin)
+    aforo_maximo INT
 );
 
 CREATE TABLE IF NOT EXISTS reservas_clase (
@@ -56,23 +55,6 @@ CREATE TABLE IF NOT EXISTS ejercicios (
     imagen_url VARCHAR(255),
     id_grupo INT,
     FOREIGN KEY (id_grupo) REFERENCES grupos_musculares(id)
-);
-
-CREATE TABLE IF NOT EXISTS rutinas (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(100) NOT NULL,
-    descripcion TEXT
-);
-
-CREATE TABLE IF NOT EXISTS ejercicios_rutina (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    id_rutina INT,
-    id_ejercicio INT,
-    parte VARCHAR(20),
-    series INT,
-    repeticiones VARCHAR(30),
-    FOREIGN KEY (id_rutina) REFERENCES rutinas(id) ON DELETE CASCADE,
-    FOREIGN KEY (id_ejercicio) REFERENCES ejercicios(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS progreso (

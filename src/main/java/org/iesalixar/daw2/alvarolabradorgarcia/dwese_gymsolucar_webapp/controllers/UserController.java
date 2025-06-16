@@ -138,9 +138,7 @@ public class UserController {
         String updatedUsername = newUsername != null ? newUsername : currentUsername;
         String newToken = jwtUtil.generateToken(updatedUsername, usuario.getRoles().stream().map(r -> r.getNombre()).toList());
 
-        Map
-
-                <String, Object> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
         response.put("message", "Perfil actualizado correctamente.");
         response.put("newToken", newToken);
 
@@ -263,31 +261,16 @@ public class UserController {
     }
 
     @GetMapping("/ranking")
-    public ResponseEntity<Page<RankingDTO>> getRanking(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "desc") String sortOrder,
-            @RequestParam(required = false) String usernameFilter,
-            @RequestParam(required = false) String topRange) {
-
-        StringBuilder sql = new StringBuilder("SELECT vr.id_usuario, u.username, vr.puntos_totales " +
-                "FROM vista_ranking vr " +
-                "JOIN usuarios u ON vr.id_usuario = u.id " +
-                "JOIN usuario_roles ur ON u.id = ur.id_usuario " +
-                "WHERE ur.id_rol = 3");
+    public ResponseEntity<Page<RankingDTO>> getRanking(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam(defaultValue = "desc") String sortOrder, @RequestParam(required = false) String usernameFilter, @RequestParam(required = false) String topRange) {
+        StringBuilder sql = new StringBuilder("SELECT vr.id_usuario, u.username, vr.puntos_totales FROM vista_ranking vr JOIN usuarios u ON vr.id_usuario = u.id JOIN usuario_roles ur ON u.id = ur.id_usuario WHERE ur.id_rol = 3");
 
         if (usernameFilter != null && !usernameFilter.isEmpty()) {
             sql.append(" AND u.username LIKE ?");
         }
-
         String orderDirection = sortOrder.equalsIgnoreCase("asc") ? "ASC" : "DESC";
         sql.append(" ORDER BY vr.puntos_totales ").append(orderDirection).append(", vr.id_usuario ASC");
 
-        String countSql = "SELECT COUNT(*) " +
-                "FROM vista_ranking vr " +
-                "JOIN usuarios u ON vr.id_usuario = u.id " +
-                "JOIN usuario_roles ur ON u.id = ur.id_usuario " +
-                "WHERE ur.id_rol = 3";
+        String countSql = "SELECT COUNT(*) FROM vista_ranking vr JOIN usuarios u ON vr.id_usuario = u.id JOIN usuario_roles ur ON u.id = ur.id_usuario WHERE ur.id_rol = 3";
         if (usernameFilter != null && !usernameFilter.isEmpty()) {
             countSql += " AND u.username LIKE ?";
         }
@@ -303,25 +286,9 @@ public class UserController {
         List<RankingDTO> rankingList;
         int offset = page * size;
         if (usernameFilter != null && !usernameFilter.isEmpty()) {
-            rankingList = jdbcTemplate.query(
-                    sqlWithPagination,
-                    (rs, rowNum) -> new RankingDTO(
-                            rs.getInt("id_usuario"),
-                            rs.getString("username"),
-                            rs.getLong("puntos_totales")
-                    ),
-                    "%" + usernameFilter + "%", size, offset
-            );
+            rankingList = jdbcTemplate.query(sqlWithPagination, (rs, rowNum) -> new RankingDTO(rs.getInt("id_usuario"), rs.getString("username"), rs.getLong("puntos_totales")), "%" + usernameFilter + "%", size, offset);
         } else {
-            rankingList = jdbcTemplate.query(
-                    sqlWithPagination,
-                    (rs, rowNum) -> new RankingDTO(
-                            rs.getInt("id_usuario"),
-                            rs.getString("username"),
-                            rs.getLong("puntos_totales")
-                    ),
-                    size, offset
-            );
+            rankingList = jdbcTemplate.query(sqlWithPagination, (rs, rowNum) -> new RankingDTO( rs.getInt("id_usuario"), rs.getString("username"), rs.getLong("puntos_totales")), size, offset );
         }
 
         if (topRange != null && !topRange.isEmpty()) {
@@ -354,61 +321,24 @@ public class UserController {
         Usuario usuario = usuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        Long puntosAcumulados = jdbcTemplate.queryForObject(
-                "SELECT COALESCE(SUM(puntos), 0) FROM progreso WHERE id_usuario = ?",
-                Long.class,
-                usuario.getId()
-        );
-
-        Long clasesAsistidas = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM progreso WHERE id_usuario = ? AND actividad = 'Acudir a una clase'",
-                Long.class,
-                usuario.getId()
-        );
-
-        Long ejerciciosRealizados = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM progreso WHERE id_usuario = ? AND actividad = 'Completar una rutina'",
-                Long.class,
-                usuario.getId()
-        );
-
+        Long puntosAcumulados = jdbcTemplate.queryForObject("SELECT COALESCE(SUM(puntos), 0) FROM progreso WHERE id_usuario = ?", Long.class, usuario.getId());
+        Long clasesAsistidas = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM progreso WHERE id_usuario = ? AND actividad = 'Acudir a una clase'", Long.class, usuario.getId());
+        Long ejerciciosRealizados = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM progreso WHERE id_usuario = ? AND actividad = 'Completar una rutina'", Long.class, usuario.getId());
         ProgressStatsDTO stats = new ProgressStatsDTO(puntosAcumulados, clasesAsistidas, ejerciciosRealizados);
         return ResponseEntity.ok(stats);
     }
 
     @GetMapping("/progreso")
-    public ResponseEntity<Page<ProgressHistoryDTO>> getProgressHistory(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "7") int size) {
+    public ResponseEntity<Page<ProgressHistoryDTO>> getProgressHistory(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "7") int size) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         Usuario usuario = usuarioRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        String sql = "SELECT fecha, actividad, puntos AS puntosObtenidos " +
-                "FROM progreso " +
-                "WHERE id_usuario = ? " +
-                "ORDER BY fecha DESC " +
-                "LIMIT ? OFFSET ?";
+        String sql = "SELECT fecha, actividad, puntos AS puntosObtenidos FROM progreso WHERE id_usuario = ? ORDER BY fecha DESC LIMIT ? OFFSET ?";
         int offset = page * size;
 
-        List<ProgressHistoryDTO> history = jdbcTemplate.query(
-                sql,
-                (rs, rowNum) -> new ProgressHistoryDTO(
-                        rs.getString("fecha"),
-                        rs.getString("actividad"),
-                        rs.getLong("puntosObtenidos")
-                ),
-                usuario.getId(),
-                size,
-                offset
-        );
-
-        Long total = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM progreso WHERE id_usuario = ?",
-                Long.class,
-                usuario.getId()
-        );
-
+        List<ProgressHistoryDTO> history = jdbcTemplate.query(sql, (rs, rowNum) -> new ProgressHistoryDTO(rs.getString("fecha"), rs.getString("actividad"), rs.getLong("puntosObtenidos")), usuario.getId(), size, offset);
+        Long total = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM progreso WHERE id_usuario = ?", Long.class, usuario.getId());
         Page<ProgressHistoryDTO> historyPage = new PageImpl<>(history, PageRequest.of(page, size), total);
         return ResponseEntity.ok(historyPage);
     }

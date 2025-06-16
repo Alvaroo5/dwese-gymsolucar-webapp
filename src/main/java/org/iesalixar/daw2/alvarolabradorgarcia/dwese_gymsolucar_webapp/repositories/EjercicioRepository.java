@@ -11,10 +11,6 @@ import java.util.List;
 @Repository
 public interface EjercicioRepository extends JpaRepository<Ejercicio, Integer> {
 
-    @Query("SELECT e FROM Ejercicio e JOIN e.grupoMuscular gm WHERE " +
-            "(:nombre IS NULL OR e.nombre LIKE %:nombre%) AND " +
-            "(:grupoMuscular IS NULL OR gm.nombre LIKE %:grupoMuscular%)")
-    List<Ejercicio> findByNombreAndGrupoMuscular(
-            @Param("nombre") String nombre,
-            @Param("grupoMuscular") String grupoMuscular);
+    @Query("SELECT e FROM Ejercicio e JOIN e.grupoMuscular gm WHERE (:nombre IS NULL OR e.nombre LIKE %:nombre%) AND (:grupoMuscular IS NULL OR gm.nombre LIKE %:grupoMuscular%)")
+    List<Ejercicio> findByNombreAndGrupoMuscular(@Param("nombre") String nombre, @Param("grupoMuscular") String grupoMuscular);
 }

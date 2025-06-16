@@ -24,7 +24,6 @@ public class ReservaClase {
     @Column(name = "asistencia_confirmada")
     private Boolean asistenciaConfirmada;
 
-    // Getters y Setters
     public Integer getId() {
         return id;
     }

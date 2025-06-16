@@ -28,7 +28,6 @@ public class Clase {
     @Column(name = "aforo_maximo")
     private Integer aforoMaximo;
 
-    // Getters y Setters
     public Integer getId() {
         return id;
     }

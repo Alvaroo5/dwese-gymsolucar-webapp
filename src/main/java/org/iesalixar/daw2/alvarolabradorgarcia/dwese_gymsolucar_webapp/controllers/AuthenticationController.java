@@ -96,7 +96,6 @@ public class AuthenticationController {
                         .body(new AuthResponseDTO(null, "El email ya está registrado."));
             }
 
-            // Validación de fechaNacimiento (no futura)
             LocalDate currentDate = LocalDate.now();
             if (registerRequest.getFechaNacimiento() != null && registerRequest.getFechaNacimiento().isAfter(currentDate)) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)

@@ -11,7 +11,6 @@ public class RankingDTO {
         this.puntosTotales = puntosTotales;
     }
 
-    // Getters y setters
     public Integer getIdUsuario() {
         return idUsuario;
     }

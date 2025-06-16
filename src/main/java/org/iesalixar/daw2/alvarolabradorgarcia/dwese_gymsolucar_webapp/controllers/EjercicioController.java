@@ -42,9 +42,7 @@ public class EjercicioController {
     }
 
     @GetMapping("/ejercicios")
-    public ResponseEntity<List<EjercicioDTO>> getEjercicios(
-            @RequestParam(value = "nombre", required = false) String nombre,
-            @RequestParam(value = "grupoMuscular", required = false) String grupoMuscular) {
+    public ResponseEntity<List<EjercicioDTO>> getEjercicios(@RequestParam(value = "nombre", required = false) String nombre, @RequestParam(value = "grupoMuscular", required = false) String grupoMuscular) {
         List<Ejercicio> ejercicios = ejercicioRepository.findByNombreAndGrupoMuscular(nombre, grupoMuscular);
         List<EjercicioDTO> ejerciciosDTO = ejercicios.stream().map(ejercicio -> new EjercicioDTO(
                 ejercicio.getId(),
@@ -82,7 +80,6 @@ public class EjercicioController {
             return ResponseEntity.badRequest().body("Grupo muscular no válido");
         }
 
-        // Crear nuevo ejercicio
         Ejercicio nuevoEjercicio = new Ejercicio();
         nuevoEjercicio.setNombre(ejercicioDTO.getNombre());
         nuevoEjercicio.setDescripcion(ejercicioDTO.getDescripcion());
@@ -102,7 +99,6 @@ public class EjercicioController {
             return ResponseEntity.status(404).body("Ejercicio no encontrado");
         }
 
-        // Validar que el grupo muscular exista
         Optional<GrupoMuscular> grupoMuscularOpt = grupoMuscularRepository.findByNombre(ejercicioDTO.getGrupoMuscular());
         if (grupoMuscularOpt.isEmpty()) {
             logger.warn("Grupo muscular '{}' no encontrado", ejercicioDTO.getGrupoMuscular());

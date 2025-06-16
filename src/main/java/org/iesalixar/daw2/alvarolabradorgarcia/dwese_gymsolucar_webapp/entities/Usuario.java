@@ -45,7 +45,6 @@ public class Usuario {
     )
     private Set<Rol> roles;
 
-    // Getters y Setters
     public Integer getId() {
         return id;
     }

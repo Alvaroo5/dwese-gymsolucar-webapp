@@ -11,7 +11,6 @@ public class ProgressStatsDTO {
         this.ejerciciosRealizados = ejerciciosRealizados;
     }
 
-    // Getters y setters
     public long getPuntosAcumulados() {
         return puntosAcumulados;
     }

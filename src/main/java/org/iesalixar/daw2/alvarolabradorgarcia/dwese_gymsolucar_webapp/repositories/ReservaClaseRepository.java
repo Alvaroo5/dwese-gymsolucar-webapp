@@ -9,12 +9,8 @@ import java.util.List;
 
 @Repository
 public interface ReservaClaseRepository extends JpaRepository<ReservaClase, Integer> {
-
     long countByIdClase(Integer idClase);
-
     List<ReservaClase> findByIdUsuario(Integer idUsuario);
-
     List<ReservaClase> findByIdUsuarioAndIdClase(Integer idUsuario, Integer idClase);
-
     void deleteByIdClase(Integer idClase);
 }

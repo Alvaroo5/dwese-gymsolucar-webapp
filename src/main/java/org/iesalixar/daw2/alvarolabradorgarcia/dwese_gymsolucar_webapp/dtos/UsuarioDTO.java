@@ -11,7 +11,6 @@ public class UsuarioDTO {
         this.estadoCuenta = estadoCuenta;
     }
 
-    // Getters y setters
     public Integer getId() {
         return id;
     }
