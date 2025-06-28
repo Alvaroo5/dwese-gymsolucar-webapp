@@ -1,13 +1,13 @@
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT PRIMARY KEY AUTO_INCREMENT,
-        email VARCHAR(50) UNIQUE NOT NULL,
-        username VARCHAR(30) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        nombre VARCHAR(50) NOT NULL,
-        apellidos VARCHAR(50) NOT NULL,
-        fecha_nacimiento DATE,
-        telefono VARCHAR(20),
-        estado_cuenta BOOLEAN DEFAULT TRUE
+    email VARCHAR(50) UNIQUE NOT NULL,
+    username VARCHAR(30) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    nombre VARCHAR(50) NOT NULL,
+    apellidos VARCHAR(50) NOT NULL,
+    fecha_nacimiento DATE,
+    telefono VARCHAR(20),
+    estado_cuenta BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE IF NOT EXISTS roles (

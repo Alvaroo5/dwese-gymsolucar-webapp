@@ -1,8 +1,6 @@
 package org.iesalixar.daw2.alvarolabradorgarcia.dwese_gymsolucar_webapp.dtos;
 
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,7 +34,8 @@ public class RegisterRequestDTO {
     @Pattern(regexp = "^[a-zA-Z\\s]*$", message = "Los apellidos deben contener solo letras y espacios.")
     private String apellidos;
 
-    @NotEmpty(message = "La fecha de nacimiento es obligatoria.")
+    @NotNull(message = "La fecha de nacimiento es obligatoria.")
+    @Past(message = "La fecha de nacimiento debe ser anterior a la fecha actual.")
     private LocalDate fechaNacimiento;
 
     @Size(max = 20)
